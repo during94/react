@@ -1,40 +1,58 @@
 import { useState } from 'react'
 import './App.css'
+import CounterButton from './CounterButton'
+import GoalStatus from './GoalStatus'
 
 function App() {
   const [count, setCount] = useState(0)
+  const goal = 21
+  const goalReached = count >= goal
 
-  function decrease() {
-    setCount((currentCount) => Math.max(0, currentCount - 1))
+  function changeCount(amount) {
+    setCount((currentCount) =>
+      Math.min(goal, Math.max(0, currentCount + amount)),
+    )
   }
 
-  function decrease5() {
-    setCount((currentCount) => Math.max(0, currentCount - 5))
-  }
-
-  function reset() {
+  function resetCount() {
     setCount(0)
-  }
-
-  function increase() {
-    setCount((currentCount) => currentCount + 1)
-  }
-
-  function increase5() {
-    setCount((currentCount) => currentCount + 5)
   }
 
   return (
     <main>
       <h1>카운터</h1>
-      <p>현재 카운터: {count}</p>
-      {count >= 10 && <p>목표 달성!</p>}
+      <p>현재 숫자: {count}</p>
 
-      <button onClick={decrease5}>5씩 감소</button>
-      <button onClick={decrease}>감소</button>
-      <button onClick={increase}>증가</button>
-      <button onClick={increase5}>5씩 증가</button>
-      <button onClick={reset}>초기화</button>
+      <CounterButton
+        label="2 증가"
+        amount={2}
+        onChange={changeCount}
+        color="royalblue"
+        disabled={goalReached}
+      />
+      <CounterButton
+        label="3 증가"
+        amount={3}
+        onChange={changeCount}
+        color="green"
+        disabled={goalReached}
+      />
+      <CounterButton
+        label="10 증가"
+        amount={10}
+        onChange={changeCount}
+        color="green"
+        disabled={goalReached}
+      />
+      <CounterButton
+        label="1 감소"
+        amount={-1}
+        onChange={changeCount}
+        color="tomato"
+      />
+
+      <button onClick={resetCount}>초기화</button>
+      <GoalStatus count={count} goal={goal} />
     </main>
   )
 }
