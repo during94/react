@@ -3,9 +3,13 @@ import './App.css'
 import GoalItem from './GoalItem'
 import { addGoal } from './addGoalUtil'
 import { GoalForm } from './GoalForm'
+// 참조하는 jsx에서 export function "명칭" 형태일 경우 { "function명" } 형태로 import가 필요
+// 참조하는 jsx에서 exrpot defualt "명칭" 형태일 경우 import "function명" 형태로 import가 필요
+import { GoalFilter } from './GoalFilter'
 
 function App() {
   const [goals, setGoals] = useState([])
+  const [filter, setFilter] = useState('all')
 
   function handleAddGoal(newGoalText) {
     setGoals((currentGoals) => addGoal({ currentGoals, newGoalText }))
@@ -31,6 +35,19 @@ function App() {
 
   const totalGoalsCount = goals.length
   const completedCount = goals.filter((goal) => goal.completed).length
+  const filteredGoals = goals.filter((goal) => {
+    if(filter === 'active'){
+      return !goal.completed
+    }
+
+    if(filter === 'completed'){
+      return goal.completed
+    }
+
+    return true
+  })
+
+  console.log("totalGoalsCount : {}", totalGoalsCount)
 
   return (
     <main>
@@ -40,10 +57,19 @@ function App() {
 
       <GoalForm onAddGoal={handleAddGoal}/>
 
+      <GoalFilter
+        currentFilter={filter}
+        onFilterChange={setFilter}
+      />
+
       {totalGoalsCount === 0 && <p>등록된 목표가 없습니다.</p>}
 
+      {totalGoalsCount > 0 && filteredGoals.length === 0 && (
+        <p>해당 조건에 맞는 목표가 없습니다.</p>
+      )}
+
       <ul>
-        {goals.map((goal) => (
+        {filteredGoals.map((goal) => (
           <GoalItem
             key={goal.id}
             id={goal.id}
