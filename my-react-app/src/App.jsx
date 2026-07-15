@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
 import GoalItem from './GoalItem'
 import { addGoal } from './addGoalUtil'
@@ -8,7 +8,21 @@ import { GoalForm } from './GoalForm'
 import { GoalFilter } from './GoalFilter'
 
 function App() {
-  const [goals, setGoals] = useState([])
+  const [goals, setGoals] = useState(() => {
+    try {
+      const saveGoals = localStorage.getItem('react-goals')
+
+      return saveGoals ? JSON.parse(saveGoals) : []
+    } catch (error) {
+      console.error('저장된 목표를 불러오지 못했습니다.', error)
+      return []
+    }
+  })
+
+  useEffect(() => {
+    localStorage.setItem('react-goals', JSON.stringify(goals))
+  }, [goals])
+
   const [filter, setFilter] = useState('all')
 
   function handleAddGoal(newGoalText) {
