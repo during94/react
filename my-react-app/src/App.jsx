@@ -2,18 +2,13 @@ import { useState } from 'react'
 import './App.css'
 import GoalItem from './GoalItem'
 import { addGoal } from './addGoalUtil'
+import { GoalForm } from './GoalForm'
 
 function App() {
   const [goals, setGoals] = useState([])
-  const [newGoalText, setNewGoalText] = useState('')
 
-  function handleAddGoal() {
-    if (newGoalText.trim() === '') {
-      return
-    }
-
+  function handleAddGoal(newGoalText) {
     setGoals((currentGoals) => addGoal({ currentGoals, newGoalText }))
-    setNewGoalText('')
   }
 
   function changeGoalCompleted(id, completed) {
@@ -43,15 +38,7 @@ function App() {
         React 학습 목표 ({completedCount} / {totalGoalsCount})
       </h1>
 
-      <input
-        type="text"
-        value={newGoalText}
-        onChange={(event) => setNewGoalText(event.target.value)}
-        placeholder="새로운 목표"
-      />
-      <button type="button" onClick={handleAddGoal}>
-        목표 추가
-      </button>
+      <GoalForm onAddGoal={handleAddGoal}/>
 
       {totalGoalsCount === 0 && <p>등록된 목표가 없습니다.</p>}
 
