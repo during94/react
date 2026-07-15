@@ -41,6 +41,24 @@ function App() {
     )
   }
 
+  function updateGoalText(id, newText) {
+    const trimText = newText.trim()
+
+    if(trimText === ''){
+      return
+    }
+
+    setGoals((currentGoals) => 
+      currentGoals.map((goal) => {
+        if(goal.id === id) {
+          return {...goal, text: trimText}
+        }
+
+        return goal
+      })
+    )
+  }
+
   function deleteGoal(id) {
     setGoals((currentGoals) =>
       currentGoals.filter((goal) => goal.id !== id),
@@ -91,6 +109,7 @@ function App() {
             completed={goal.completed}
             onCompletedChange={changeGoalCompleted}
             onDelete={deleteGoal}
+            onEdit={updateGoalText}
           />
         ))}
       </ul>
