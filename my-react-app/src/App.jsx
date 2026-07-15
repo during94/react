@@ -1,58 +1,33 @@
-import { useState } from 'react'
 import './App.css'
-import CounterButton from './CounterButton'
-import GoalStatus from './GoalStatus'
+import GoalItem from './GoalItem'
 
 function App() {
-  const [count, setCount] = useState(0)
-  const goal = 21
-  const goalReached = count >= goal
+  const goals = [
+    { id: 1, text: '컴포넌트 이해하기', completed: true },
+    { id: 2, text: 'Props 이해하기', completed: true },
+    { id: 3, text: '배열 렌더링 배우기', completed: false },
+    { id: 4, text: '목표 추가해보기', completed: false },
+    { id: 5, text: '검사 받기', completed: false },
+  ]
 
-  function changeCount(amount) {
-    setCount((currentCount) =>
-      Math.min(goal, Math.max(0, currentCount + amount)),
-    )
-  }
-
-  function resetCount() {
-    setCount(0)
-  }
+  const totalGoalsCount = goals.length
+  const completedCount = goals.filter((goal) => goal.completed).length
 
   return (
     <main>
-      <h1>카운터</h1>
-      <p>현재 숫자: {count}</p>
+      <h1>
+        React 학습 목표 ({completedCount} / {totalGoalsCount})
+      </h1>
 
-      <CounterButton
-        label="2 증가"
-        amount={2}
-        onChange={changeCount}
-        color="royalblue"
-        disabled={goalReached}
-      />
-      <CounterButton
-        label="3 증가"
-        amount={3}
-        onChange={changeCount}
-        color="green"
-        disabled={goalReached}
-      />
-      <CounterButton
-        label="10 증가"
-        amount={10}
-        onChange={changeCount}
-        color="green"
-        disabled={goalReached}
-      />
-      <CounterButton
-        label="1 감소"
-        amount={-1}
-        onChange={changeCount}
-        color="tomato"
-      />
-
-      <button onClick={resetCount}>초기화</button>
-      <GoalStatus count={count} goal={goal} />
+      <ul>
+        {goals.map((goal) => (
+          <GoalItem
+            key={goal.id}
+            text={goal.text}
+            completed={goal.completed}
+          />
+        ))}
+      </ul>
     </main>
   )
 }
