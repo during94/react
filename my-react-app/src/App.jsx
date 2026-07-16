@@ -7,6 +7,7 @@ import { GoalForm } from './GoalForm'
 import { GoalFilter } from './GoalFilter'
 import { goalsReducer } from './goalsReducer'
 import { useLocalStorageSync } from './hooks/useLocalStorageSync'
+import { RecommendedGoals } from './RecommendedGoals'
 
 function loadGoals(initialGoals){
     try {
@@ -86,6 +87,10 @@ function App() {
         currentFilter={filter}
         onFilterChange={setFilter}
       />
+
+      {/* 기존 목표 목록 */}
+
+      <RecommendedGoals />
 
       {totalGoalsCount === 0 && <p>등록된 목표가 없습니다.</p>}
 
