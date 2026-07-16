@@ -1,4 +1,4 @@
-import { useState, useEffect, useReducer } from 'react'
+import { useState, useReducer } from 'react'
 import './App.css'
 import GoalItem from './GoalItem'
 import { GoalForm } from './GoalForm'
@@ -6,6 +6,7 @@ import { GoalForm } from './GoalForm'
 // 참조하는 jsx에서 exrpot defualt "명칭" 형태일 경우 import "function명" 형태로 import가 필요
 import { GoalFilter } from './GoalFilter'
 import { goalsReducer } from './goalsReducer'
+import { useLocalStorageSync } from './hooks/useLocalStorageSync'
 
 function loadGoals(initialGoals){
     try {
@@ -25,9 +26,7 @@ function App() {
     loadGoals
   )
 
-  useEffect(() => {
-    localStorage.setItem('react-goals', JSON.stringify(goals))
-  }, [goals])
+  useLocalStorageSync('react-goals', goals)
 
   const [filter, setFilter] = useState('all')
 
