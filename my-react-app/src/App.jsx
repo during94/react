@@ -1,23 +1,29 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useReducer } from 'react'
 import './App.css'
 import GoalItem from './GoalItem'
-import { addGoal } from './addGoalUtil'
 import { GoalForm } from './GoalForm'
 // 참조하는 jsx에서 export function "명칭" 형태일 경우 { "function명" } 형태로 import가 필요
 // 참조하는 jsx에서 exrpot defualt "명칭" 형태일 경우 import "function명" 형태로 import가 필요
 import { GoalFilter } from './GoalFilter'
+import { goalsReducer } from './goalsReducer'
 
-function App() {
-  const [goals, setGoals] = useState(() => {
+function loadGoals(initialGoals){
     try {
       const saveGoals = localStorage.getItem('react-goals')
 
-      return saveGoals ? JSON.parse(saveGoals) : []
+      return saveGoals ? JSON.parse(saveGoals) : initialGoals
     } catch (error) {
       console.error('저장된 목표를 불러오지 못했습니다.', error)
-      return []
+      return initialGoals
     }
-  })
+}
+
+function App() {
+  const [goals, dispatch] = useReducer(
+    goalsReducer,
+    [],
+    loadGoals
+  )
 
   useEffect(() => {
     localStorage.setItem('react-goals', JSON.stringify(goals))
@@ -26,43 +32,33 @@ function App() {
   const [filter, setFilter] = useState('all')
 
   function handleAddGoal(newGoalText) {
-    setGoals((currentGoals) => addGoal({ currentGoals, newGoalText }))
+    dispatch({
+      type: 'added',
+      newGoalText
+    })
   }
 
   function changeGoalCompleted(id, completed) {
-    setGoals((currentGoals) =>
-      currentGoals.map((goal) => {
-        if (goal.id === id) {
-          return { ...goal, completed }
-        }
-
-        return goal
-      }),
-    )
+    dispatch({
+      type: 'completedChanged',
+      id,
+      completed
+    })
   }
 
   function updateGoalText(id, newText) {
-    const trimText = newText.trim()
-
-    if(trimText === ''){
-      return
-    }
-
-    setGoals((currentGoals) => 
-      currentGoals.map((goal) => {
-        if(goal.id === id) {
-          return {...goal, text: trimText}
-        }
-
-        return goal
-      })
-    )
+    dispatch({
+      type: 'textUpdated',
+      id,
+      text: newText
+    })
   }
 
   function deleteGoal(id) {
-    setGoals((currentGoals) =>
-      currentGoals.filter((goal) => goal.id !== id),
-    )
+    dispatch({
+      type: 'deleted',
+      id
+    })
   }
 
   const totalGoalsCount = goals.length
@@ -78,8 +74,6 @@ function App() {
 
     return true
   })
-
-  console.log("totalGoalsCount : {}", totalGoalsCount)
 
   return (
     <main>
