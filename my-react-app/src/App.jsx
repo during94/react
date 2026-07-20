@@ -31,6 +31,8 @@ function App() {
 
   const [filter, setFilter] = useState('all')
 
+  const [showRecommendations, setShowRecommendations] = useState(true)
+
   function handleAddGoal(newGoalText) {
     dispatch({
       type: 'added',
@@ -88,9 +90,18 @@ function App() {
         onFilterChange={setFilter}
       />
 
+      <button
+        type="button"
+        onClick={() => 
+          setShowRecommendations((currentValue) => !currentValue)
+        }
+      >
+        추천 목표 표시 전환
+      </button>
+
       {/* 기존 목표 목록 */}
 
-      <RecommendedGoals />
+      {showRecommendations && <RecommendedGoals />}
 
       {totalGoalsCount === 0 && <p>등록된 목표가 없습니다.</p>}
 

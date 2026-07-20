@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 
-// function sleep(milliseconds) {
-//     return new Promise((resolve) => {
-//         setTimeout(resolve, milliseconds)
-//     })
-// }
+function sleep(milliseconds) {
+    return new Promise((resolve) => {
+        setTimeout(resolve, milliseconds)
+    })
+}
 
 export function RecommendedGoals(){
     const [recommendedGoals, setRecommendedGoals] = useState([])
@@ -14,6 +14,8 @@ export function RecommendedGoals(){
     const [error, setError] = useState(null)
 
     useEffect(() => {
+        let ignore = false
+
         async function loadRecommendedGoals() {
             try {
                 setIsLoding(true)
@@ -23,26 +25,37 @@ export function RecommendedGoals(){
                     '/recommended-goals.json'
                 )
 
-                // await sleep(10000)
-
                 if(!response.ok){
                     throw new Error(
                         `데이터 요청 실패 : ${response.status}`
                     )
                 }
 
+                await sleep(3000)
+
                 const data = await response.json()
 
-                setRecommendedGoals(data)
+                if(!ignore){
+                    setRecommendedGoals(data)
+                }
 
             } catch(requestError) {
-                setError(requestError)
+                if(!ignore){
+                    setError(requestError)
+                }
             } finally {
-                setIsLoding(false)
+                if(!ignore){
+                    setIsLoding(false)
+                }
             }
         }
 
         loadRecommendedGoals()
+
+        return () => {
+            ignore = true
+        }
+
     }, [])
 
     if(isLoding){
