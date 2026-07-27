@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router'
 
 function GoalItem({ id, text, completed, onCompletedChange, onDelete, onEdit }) {
   const [isEditing, setIsEditing] = useState(false)
@@ -69,6 +70,10 @@ function GoalItem({ id, text, completed, onCompletedChange, onDelete, onEdit }) 
         />
         {text} {!completed && '(진행 중)'}
       </label>
+
+      <Link to={`/goals/${id}`}>
+        상세 보기
+      </Link>
 
       <button type="button" onClick={startEditing}>
         수정

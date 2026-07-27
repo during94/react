@@ -8,6 +8,8 @@ import { GoalFilter } from './GoalFilter'
 import { goalsReducer } from './goalsReducer'
 import { useLocalStorageSync } from './hooks/useLocalStorageSync'
 import { RecommendedGoals } from './RecommendedGoals'
+import { Route, Routes } from 'react-router'
+import { GoalDetailPage } from './GoalDetailPage'
 
 function loadGoals(initialGoals){
     try {
@@ -115,60 +117,75 @@ function App() {
   })
 
   return (
-    <main>
-      <h1>
-        React 학습 목표 ({completedCount} / {totalGoalsCount})
-      </h1>
+    <Routes>
+      <Route
+        path="/"
+        element={
+          <main>
+            <h1>
+              React 학습 목표 ({completedCount} / {totalGoalsCount})
+            </h1>
 
-      {notification !== null && (
-        <p
-          className={`notification notification--${notification.type}`}
-          role="status"
-        >
-          {notification.message}
-        </p>
-      )}
+            {notification !== null && (
+              <p
+                className={`notification notification--${notification.type}`}
+                role="status"
+              >
+                {notification.message}
+              </p>
+            )}
 
-      <GoalForm onAddGoal={handleAddGoal}/>
+            <GoalForm onAddGoal={handleAddGoal}/>
 
-      <GoalFilter
-        currentFilter={filter}
-        onFilterChange={setFilter}
+            <GoalFilter
+              currentFilter={filter}
+              onFilterChange={setFilter}
+            />
+
+            <button
+              type="button"
+              onClick={() => 
+                setShowRecommendations((currentValue) => !currentValue)
+              }
+            >
+              추천 목표 표시 전환
+            </button>
+
+            {/* 기존 목표 목록 */}
+
+            {showRecommendations && <RecommendedGoals onAddGoal={handleAddGoal} />}
+
+            {totalGoalsCount === 0 && <p>등록된 목표가 없습니다.</p>}
+
+            {totalGoalsCount > 0 && filteredGoals.length === 0 && (
+              <p>해당 조건에 맞는 목표가 없습니다.</p>
+            )}
+
+            <ul>
+              {filteredGoals.map((goal) => (
+                <GoalItem
+                  key={goal.id}
+                  id={goal.id}
+                  text={goal.text}
+                  completed={goal.completed}
+                  onCompletedChange={changeGoalCompleted}
+                  onDelete={deleteGoal}
+                  onEdit={updateGoalText}
+                />
+              ))}
+            </ul>
+          </main>
+        }
       />
 
-      <button
-        type="button"
-        onClick={() => 
-          setShowRecommendations((currentValue) => !currentValue)
+      <Route
+        path="/goals/:goalId"
+        element={
+          <GoalDetailPage goals={goals} />
         }
-      >
-        추천 목표 표시 전환
-      </button>
-
-      {/* 기존 목표 목록 */}
-
-      {showRecommendations && <RecommendedGoals onAddGoal={handleAddGoal} />}
-
-      {totalGoalsCount === 0 && <p>등록된 목표가 없습니다.</p>}
-
-      {totalGoalsCount > 0 && filteredGoals.length === 0 && (
-        <p>해당 조건에 맞는 목표가 없습니다.</p>
-      )}
-
-      <ul>
-        {filteredGoals.map((goal) => (
-          <GoalItem
-            key={goal.id}
-            id={goal.id}
-            text={goal.text}
-            completed={goal.completed}
-            onCompletedChange={changeGoalCompleted}
-            onDelete={deleteGoal}
-            onEdit={updateGoalText}
-          />
-        ))}
-      </ul>
-    </main>
+      />
+    </Routes>
+    
   )
 }
 
