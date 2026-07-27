@@ -1,4 +1,4 @@
-import { useState, useReducer } from 'react'
+import { useState, useReducer, useEffect } from 'react'
 import './App.css'
 import GoalItem from './GoalItem'
 import { GoalForm } from './GoalForm'
@@ -27,6 +27,23 @@ function App() {
     loadGoals
   )
 
+  const [notification, setNotification] = useState(null)
+
+  useEffect(() => {
+      if(notification === null) {
+        return
+      }
+
+      const timerId = setTimeout(() => {
+        setNotification(null)
+      }, 3000)
+
+      return () => {
+        clearTimeout(timerId)
+      }
+    }, [notification]
+  )
+
   useLocalStorageSync('react-goals', goals)
 
   const [filter, setFilter] = useState('all')
@@ -34,9 +51,29 @@ function App() {
   const [showRecommendations, setShowRecommendations] = useState(true)
 
   function handleAddGoal(newGoalText) {
+    const trimmedText = newGoalText.trim()
+
+    const isDuplicated = goals.some(
+      (goal) => goal.text === trimmedText
+    )
+
+    if(isDuplicated){
+      setNotification({
+        type: 'warning',
+        message: `"${trimmedText}" 목표는 이미 등록되어 있습니다.`
+      })
+
+      return
+    }
+    
     dispatch({
       type: 'added',
       newGoalText
+    })
+
+    setNotification({
+      type: 'success',
+      message: `"${trimmedText}" 목표가 추가되었습니다.`
     })
   }
 
@@ -82,6 +119,15 @@ function App() {
       <h1>
         React 학습 목표 ({completedCount} / {totalGoalsCount})
       </h1>
+
+      {notification !== null && (
+        <p
+          className={`notification notification--${notification.type}`}
+          role="status"
+        >
+          {notification.message}
+        </p>
+      )}
 
       <GoalForm onAddGoal={handleAddGoal}/>
 

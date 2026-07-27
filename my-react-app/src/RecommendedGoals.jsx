@@ -22,7 +22,7 @@ export function RecommendedGoals({ onAddGoal }){
     }
 
     return (
-        <selection>
+        <section>
             <h2>추천 학습 목표</h2>
 
             <ul>
@@ -41,6 +41,6 @@ export function RecommendedGoals({ onAddGoal }){
                     </li>
                 ))}
             </ul>
-        </selection>
+        </section>
     )
 }
