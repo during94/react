@@ -101,7 +101,7 @@ function App() {
 
       {/* 기존 목표 목록 */}
 
-      {showRecommendations && <RecommendedGoals />}
+      {showRecommendations && <RecommendedGoals onAddGoal={handleAddGoal} />}
 
       {totalGoalsCount === 0 && <p>등록된 목표가 없습니다.</p>}
 

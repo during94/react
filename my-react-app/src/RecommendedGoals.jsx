@@ -1,6 +1,6 @@
 import { useFetch } from './hooks/useFetch'
 
-export function RecommendedGoals(){
+export function RecommendedGoals({ onAddGoal }){
     const {
         data: recommendedGoals,
         isLoading,
@@ -30,7 +30,14 @@ export function RecommendedGoals(){
                     <li
                         key={goal.id}
                     >
-                        {goal.text}
+                        <span>{goal.text}</span>
+
+                        <button
+                            type="button"
+                            onClick={() => onAddGoal(goal.text)}
+                        >
+                            추가
+                        </button>
                     </li>
                 ))}
             </ul>
