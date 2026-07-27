@@ -1,7 +1,9 @@
 import { Link, useParams } from 'react-router'
+import { useGoals } from './hooks/useGoals'
 
-export function GoalDetailPage({ goals }){
+export function GoalDetailPage(){
     const { goalId } = useParams()
+    const { goals } = useGoals()
 
     const goal = goals.find(
         (goal) => String(goal.id) === goalId

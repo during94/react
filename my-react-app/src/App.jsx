@@ -10,6 +10,7 @@ import { useLocalStorageSync } from './hooks/useLocalStorageSync'
 import { RecommendedGoals } from './RecommendedGoals'
 import { Route, Routes } from 'react-router'
 import { GoalDetailPage } from './GoalDetailPage'
+import { GoalsContext } from './contexts/GoalsContext' 
 
 function loadGoals(initialGoals){
     try {
@@ -117,75 +118,81 @@ function App() {
   })
 
   return (
-    <Routes>
-      <Route
-        path="/"
-        element={
-          <main>
-            <h1>
-              React 학습 목표 ({completedCount} / {totalGoalsCount})
-            </h1>
+    <GoalsContext.Provider
+      value={{
+        goals,
+        dispatch
+      }}
+    >
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <main>
+              <h1>
+                React 학습 목표 ({completedCount} / {totalGoalsCount})
+              </h1>
 
-            {notification !== null && (
-              <p
-                className={`notification notification--${notification.type}`}
-                role="status"
+              {notification !== null && (
+                <p
+                  className={`notification notification--${notification.type}`}
+                  role="status"
+                >
+                  {notification.message}
+                </p>
+              )}
+
+              <GoalForm onAddGoal={handleAddGoal}/>
+
+              <GoalFilter
+                currentFilter={filter}
+                onFilterChange={setFilter}
+              />
+
+              <button
+                type="button"
+                onClick={() => 
+                  setShowRecommendations((currentValue) => !currentValue)
+                }
               >
-                {notification.message}
-              </p>
-            )}
+                추천 목표 표시 전환
+              </button>
 
-            <GoalForm onAddGoal={handleAddGoal}/>
+              {/* 기존 목표 목록 */}
 
-            <GoalFilter
-              currentFilter={filter}
-              onFilterChange={setFilter}
-            />
+              {showRecommendations && <RecommendedGoals onAddGoal={handleAddGoal} />}
 
-            <button
-              type="button"
-              onClick={() => 
-                setShowRecommendations((currentValue) => !currentValue)
-              }
-            >
-              추천 목표 표시 전환
-            </button>
+              {totalGoalsCount === 0 && <p>등록된 목표가 없습니다.</p>}
 
-            {/* 기존 목표 목록 */}
+              {totalGoalsCount > 0 && filteredGoals.length === 0 && (
+                <p>해당 조건에 맞는 목표가 없습니다.</p>
+              )}
 
-            {showRecommendations && <RecommendedGoals onAddGoal={handleAddGoal} />}
+              <ul>
+                {filteredGoals.map((goal) => (
+                  <GoalItem
+                    key={goal.id}
+                    id={goal.id}
+                    text={goal.text}
+                    completed={goal.completed}
+                    onCompletedChange={changeGoalCompleted}
+                    onDelete={deleteGoal}
+                    onEdit={updateGoalText}
+                  />
+                ))}
+              </ul>
+            </main>
+          }
+        />
 
-            {totalGoalsCount === 0 && <p>등록된 목표가 없습니다.</p>}
-
-            {totalGoalsCount > 0 && filteredGoals.length === 0 && (
-              <p>해당 조건에 맞는 목표가 없습니다.</p>
-            )}
-
-            <ul>
-              {filteredGoals.map((goal) => (
-                <GoalItem
-                  key={goal.id}
-                  id={goal.id}
-                  text={goal.text}
-                  completed={goal.completed}
-                  onCompletedChange={changeGoalCompleted}
-                  onDelete={deleteGoal}
-                  onEdit={updateGoalText}
-                />
-              ))}
-            </ul>
-          </main>
-        }
-      />
-
-      <Route
-        path="/goals/:goalId"
-        element={
-          <GoalDetailPage goals={goals} />
-        }
-      />
-    </Routes>
-    
+        <Route
+          path="/goals/:goalId"
+          element={
+            <GoalDetailPage />
+          }
+        />
+      </Routes>
+    </GoalsContext.Provider>
   )
 }
 
